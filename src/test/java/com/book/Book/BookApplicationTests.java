@@ -1,10 +1,10 @@
-package com.hogwarts.school;
+package com.book.Book;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class HogwartsApplicationTests {
+class BookApplicationTests {
 
 	@Test
 	void contextLoads() {
