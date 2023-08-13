@@ -9,7 +9,7 @@ import java.util.Objects;
 @Entity
 public class Avatar {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String filePath;
     private long fileSize;
@@ -29,12 +29,13 @@ public class Avatar {
         this.student = student;
     }
 
-    public Avatar(Long id, String filePath, long fileSize, String mediaType, byte[] data) {
+    public Avatar(Long id, String filePath, long fileSize, String mediaType, byte[] data, Student student) {
         this.id = id;
         this.filePath = filePath;
         this.fileSize = fileSize;
         this.mediaType = mediaType;
         this.data = data;
+        this.student = student;
     }
 
     public Avatar() {
@@ -81,21 +82,6 @@ public class Avatar {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Avatar avatar = (Avatar) o;
-        return fileSize == avatar.fileSize && Objects.equals(id, avatar.id) && Objects.equals(filePath, avatar.filePath) && Objects.equals(mediaType, avatar.mediaType) && Arrays.equals(data, avatar.data);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Objects.hash(id, filePath, fileSize, mediaType);
-        result = 31 * result + Arrays.hashCode(data);
-        return result;
-    }
-
-    @Override
     public String toString() {
         return "Avatar{" +
                 "id=" + id +
@@ -103,6 +89,22 @@ public class Avatar {
                 ", fileSize=" + fileSize +
                 ", mediaType='" + mediaType + '\'' +
                 ", data=" + Arrays.toString(data) +
+                ", student=" + student +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Avatar avatar = (Avatar) o;
+        return fileSize == avatar.fileSize && Objects.equals(id, avatar.id) && Objects.equals(filePath, avatar.filePath) && Objects.equals(mediaType, avatar.mediaType) && Arrays.equals(data, avatar.data) && Objects.equals(student, avatar.student);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(id, filePath, fileSize, mediaType, student);
+        result = 31 * result + Arrays.hashCode(data);
+        return result;
     }
 }

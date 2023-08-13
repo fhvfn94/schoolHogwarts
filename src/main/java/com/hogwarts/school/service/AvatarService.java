@@ -52,8 +52,9 @@ public class AvatarService {
         return fileName.substring(fileName.lastIndexOf(".") + 1);
     }
 
-    public Avatar findAvatar(Long avatarId) {
-        return avatarRepository.findById(avatarId).orElse(new Avatar());
+    public Avatar findAvatar(Long studentId) {
+        return avatarRepository.findById(studentId).orElse(new Avatar());
     }
+
 
 }
