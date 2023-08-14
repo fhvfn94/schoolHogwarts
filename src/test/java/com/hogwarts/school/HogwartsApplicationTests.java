@@ -3,6 +3,7 @@ package com.hogwarts.school;
 import com.hogwarts.school.controller.StudentController;
 
 import com.hogwarts.school.model.Student;
+import com.hogwarts.school.service.StudentService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +11,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
+import java.util.NoSuchElementException;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class HogwartsApplicationTests {
     @LocalServerPort
     private int port;
+
+    @Autowired
+    private StudentService studentService;
 
     @Autowired
     private StudentController studentController;
@@ -45,7 +51,12 @@ class HogwartsApplicationTests {
     public void testDeleteStudent() throws Exception {
         Student student = new Student();
         student.setId(1L);
-        Assertions
-                .assertThat(this.restTemplate.delete("http://localhost:" + port + "/student", student.getId(), String.class));
+
+        this.restTemplate.delete("http://localhost:" + port + "/student/" + student.getId());
+
+        // После удаления, вы можете добавить проверку, что студент больше не существует.
+        Assertions.assertThatThrownBy(() -> studentService.getStudentById(student.getId()))
+                .isInstanceOf(NoSuchElementException.class); // Подставьте правильное исключение
     }
+
 }
