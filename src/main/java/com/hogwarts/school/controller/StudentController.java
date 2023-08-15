@@ -55,4 +55,14 @@ public class StudentController {
         return ResponseEntity.ok(students);
     }
 
+    @GetMapping("/total")
+    public Integer getAllNumberOfStudents() {
+        return studentService.getAllNumberOfStudents();
+    }
+
+    @GetMapping("/avg")
+    public Double getAvgAge() {
+        return studentService.getAvgAge();
+    }
+
 }

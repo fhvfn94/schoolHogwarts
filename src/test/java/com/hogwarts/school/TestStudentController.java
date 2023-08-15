@@ -24,7 +24,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
-public class TestHogwartsApplication {
+public class TestStudentController {
     @Autowired
     private MockMvc mockMvc;
 
@@ -60,5 +60,64 @@ public class TestHogwartsApplication {
                 .andExpect(status().isOk()) //receive
                 .andExpect((ResultMatcher) jsonPath("$.id").value(id.intValue()))
                 .andExpect((ResultMatcher) jsonPath("$.name").value(name));
+    }
+    @Test
+    public void getStudentByIdTest() throws Exception {
+        Long id = 1L;
+        String name = "Alice";
+
+        Student student = new Student();
+        student.setId(id);
+        student.setName(name);
+
+        when(studentRepository.findById(any(Long.class))).thenReturn(Optional.of(student));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/student/{id}", id) //send
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()) //receive
+                .andExpect((ResultMatcher) jsonPath("$.id").value(id.intValue()))
+                .andExpect((ResultMatcher) jsonPath("$.name").value(name));
+    }
+    @Test
+    public void updateStudentTest() throws Exception {
+        Long id = 1L;
+        String updatedName = "UpdatedName";
+
+        JSONObject updatedUserObject = new JSONObject();
+        updatedUserObject.put("id", id);
+        updatedUserObject.put("name", updatedName);
+
+        Student updatedStudent = new Student();
+        updatedStudent.setId(id);
+        updatedStudent.setName(updatedName);
+
+        when(studentRepository.findById(any(Long.class))).thenReturn(Optional.of(updatedStudent));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put("/student") //send
+                        .content(updatedUserObject.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()) //receive
+                .andExpect((ResultMatcher) jsonPath("$.id").value(id.intValue()))
+                .andExpect((ResultMatcher) jsonPath("$.name").value(updatedName));
+    }
+    @Test
+    public void deleteStudentTest() throws Exception {
+        Long id = 1L;
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete("/student/{id}", id)) //send
+                .andExpect(status().isOk()); //receive
+    }
+    @Test
+    public void getAllStudentTest() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/student") //send
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()) //receive
+                .andExpect((ResultMatcher) jsonPath("$", Matchers.hasSize(9)));
     }
 }
