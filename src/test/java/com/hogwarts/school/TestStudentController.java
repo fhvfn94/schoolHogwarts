@@ -14,16 +14,17 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import java.util.List;
 import java.util.Optional;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static com.jayway.jsonpath.JsonPath.read;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@WebMvcTest(StudentController.class)
 public class TestStudentController {
     @Autowired
     private MockMvc mockMvc;
@@ -33,9 +34,6 @@ public class TestStudentController {
 
     @SpyBean
     private StudentService studentService;
-
-    @InjectMocks
-    private StudentController studentController;
 
     @Test
     public void saveStudentTest() throws Exception {
@@ -58,9 +56,10 @@ public class TestStudentController {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()) //receive
-                .andExpect((ResultMatcher) jsonPath("$.id").value(id.intValue()))
-                .andExpect((ResultMatcher) jsonPath("$.name").value(name));
+                .andExpect(jsonPath("$.id").value(id.intValue()))
+                .andExpect(jsonPath("$.name").value(name));
     }
+
     @Test
     public void getStudentByIdTest() throws Exception {
         Long id = 1L;
@@ -76,9 +75,10 @@ public class TestStudentController {
                         .get("/student/{id}", id) //send
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()) //receive
-                .andExpect((ResultMatcher) jsonPath("$.id").value(id.intValue()))
-                .andExpect((ResultMatcher) jsonPath("$.name").value(name));
+                .andExpect(jsonPath("$.id").value(id.intValue()))
+                .andExpect(jsonPath("$.name").value(name));
     }
+
     @Test
     public void updateStudentTest() throws Exception {
         Long id = 1L;
@@ -92,7 +92,7 @@ public class TestStudentController {
         updatedStudent.setId(id);
         updatedStudent.setName(updatedName);
 
-        when(studentRepository.findById(any(Long.class))).thenReturn(Optional.of(updatedStudent));
+        when(studentRepository.save(updatedStudent)).thenReturn(updatedStudent);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .put("/student") //send
@@ -100,9 +100,10 @@ public class TestStudentController {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()) //receive
-                .andExpect((ResultMatcher) jsonPath("$.id").value(id.intValue()))
-                .andExpect((ResultMatcher) jsonPath("$.name").value(updatedName));
+                .andExpect(jsonPath("$.id").value(id.intValue()))
+                .andExpect(jsonPath("$.name").value(updatedName));
     }
+
     @Test
     public void deleteStudentTest() throws Exception {
         Long id = 1L;
@@ -111,13 +112,17 @@ public class TestStudentController {
                         .delete("/student/{id}", id)) //send
                 .andExpect(status().isOk()); //receive
     }
+
     @Test
     public void getAllStudentTest() throws Exception {
+        Student student1 = new Student();
+        Student student2 = new Student();
+        when(studentRepository.findAll()).thenReturn(List.of(student1, student2));
 
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/student") //send
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()) //receive
-                .andExpect((ResultMatcher) jsonPath("$", Matchers.hasSize(9)));
+                .andExpect(jsonPath("$", Matchers.hasSize(2)));
     }
 }
