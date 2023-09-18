@@ -5,6 +5,8 @@ import com.hog.hog.model.Student;
 import com.hog.hog.repository.AvatarRepository;
 import com.hog.hog.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -61,5 +63,9 @@ public class AvatarService {
         File dir = new File(avatarsDir);
         File file = Arrays.stream(dir.listFiles()).filter(f -> f.getName().substring(0, f.getName().lastIndexOf(".")).equals(id.toString())).findFirst().get();
         return Files.readAllBytes(file.toPath());
+    }
+
+    public Page<Avatar> findAll(PageRequest pageRequest) {
+        return avatarRepository.findAll(pageRequest);
     }
 }
