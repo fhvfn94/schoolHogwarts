@@ -1,0 +1,6 @@
+CREATE TABLE Car (
+    CarID INT PRIMARY KEY AUTO_INCREMENT,
+    Make VARCHAR(255),
+    Model VARCHAR(255),
+    Price DECIMAL(10, 2)
+);
